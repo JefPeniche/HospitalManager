@@ -7,5 +7,12 @@ router.post('/', hospitalController.create);
 
 //READ
 router.get('/', hospitalController.findAll);
+router.get('/:id', hospitalController.find);
+
+//UPDATE
+router.put('/:id', hospitalController.update);
+
+//DELETE
+router.delete('/:id', hospitalController.delete);
 
 module.exports = router;
