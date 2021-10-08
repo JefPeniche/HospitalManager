@@ -24,7 +24,7 @@ exports.create = (request, response) => {
 }
 
 exports.findAll = (request, response) => {    
-    Hospital.findAll( 
+    Guardian.findAll( 
         (error, guardians)=> {  
             if (error)  response.status(500).send(
                 { error: true, message: 'DB internal error.' });
