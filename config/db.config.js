@@ -10,7 +10,6 @@ const dbConnector = mysql.createConnection({
 
 dbConnector.connect(function(error) {  
     if (error) throw error;  
-    console.log("DigitalHospital DB is connected...");
 });
 
 module.exports = dbConnector;
