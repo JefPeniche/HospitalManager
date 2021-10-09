@@ -24,6 +24,6 @@ app.use('/api/hospitals', hospitalRoutes)
 app.use('/api/patients', patientRoutes)
 
 
-app.listen(port, () => {
-    console.log('Server is listening on port ' + port);
-});
+const server = app.listen(port);
+
+module.exports = { app, server }
