@@ -1,11 +1,11 @@
-'use strict';
-const mysql = require('mysql');
+"use strict";
+const mysql = require("mysql");
 
-const dbConnector = mysql.createConnection({  
-    host     : 'localhost',  
-    user     : 'root',  
-    password : 'VmLl78572097',  
-    database : 'DigitalHospital'
+const dbConnector = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "toor",
+    database: "DigitalHospital",
 });
 
 dbConnector.connect(function(error) {  
