@@ -22,3 +22,28 @@ exports.findAll = (response) => {
         }
     );
 }
+
+exports.find = (hospitalId, response) => {
+    dbConnector.query( querySelectPatients+" WHERE Hospitals.id = ?", hospitalId,
+        (error, result) => {
+            error? response(error) : response(false, result);
+        }
+    )
+}
+
+exports.update = (id, hospital, response) => {
+    dbConnector.query("UPDATE Hospitals SET ? WHERE id = ?", [hospital, id],
+        (error, result) => {
+            error? response(error) : response(false, result);
+        }
+    )
+}
+
+exports.delete = (hospitalId, response) => {
+    dbConnector.query("DELETE FROM Hospitals WHERE id = ?", hospitalId,
+        (error, result) => {
+            error? response(error) : response(false, result);
+        }
+    )
+}
+
