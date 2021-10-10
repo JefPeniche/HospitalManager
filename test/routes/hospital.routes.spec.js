@@ -29,7 +29,7 @@ describe('Test hospital routes', () => {
     expect(body.id).toBe(id)
   })
   
-  test('Get /api/hospitals can be added new hospital', async () => {
+  test('POST /api/hospitals can be added new hospital', async () => {
     const newHospital = {
       name: 'Hospital Pensiones',
       city: 'Merida'
