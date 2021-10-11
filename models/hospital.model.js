@@ -1,5 +1,7 @@
 'use strict';
-const dbConnector = require('../config/db.config');
+const dbConnector = require('../config/db.config');ç
+const querySelectHospital = "SELECT Hospitals.*,"
+    +" Hospitals.name as hospital_name, Hospitals.city as hospital_city FROM Hospitals"  
 
 exports.create = (hospital, response) => {
     dbConnector.query("INSERT INTO Hospitals SET ?", hospital, 
@@ -24,7 +26,7 @@ exports.findAll = (response) => {
 }
 
 exports.find = (hospitalId, response) => {
-    dbConnector.query( querySelectPatients+" WHERE Hospitals.id = ?", hospitalId,
+    dbConnector.query( querySelectHospital+" WHERE Hospitals.id = ?", hospitalId,
         (error, result) => {
             error? response(error) : response(false, result);
         }

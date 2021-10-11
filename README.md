@@ -14,3 +14,13 @@ Ejecutar los siguientes comandos:
 -   npm install express
 -   npm install mysql
 -   npm run
+
+### Actualización JWT
+
+Borrar BD y ejecutar nuevamente los scripts (se añadió una nueva tabla)
+
+Instalar las siguientes bibliotecas:
+
+-   npm install moment
+-   npm install bcryptjs
+-   npm install jwt-simple
