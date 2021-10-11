@@ -4,12 +4,12 @@ const mysql = require("mysql");
 const dbConnector = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "toor",
+    password: "ubuntu",
     database: "DigitalHospital",
 });
 
-dbConnector.connect(function(error) {  
-    if (error) throw error;  
+dbConnector.connect(function(error) {
+    if (error) throw error;
 });
 
 module.exports = dbConnector;
