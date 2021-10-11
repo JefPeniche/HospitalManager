@@ -6,7 +6,7 @@ const moment = require("moment");
 exports.register = async (request, response) => {
     const data = {
         email: request.body.email,
-        password: bcrypt.hashSync(req.body.password, 10),
+        password: bcrypt.hashSync(request.body.password, 10),
         name: request.body.name,
     };
     if (Object.keys(data).some((key) => typeof data[key] === "undefined") || Object.keys(data).some((key) => data[key].length === 0)) response.status(400).send({ message: "Incomplete data." });
