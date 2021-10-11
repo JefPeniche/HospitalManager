@@ -5,25 +5,38 @@ const db = require('../../config/db.config.js')
 const api = supertest(app)
 
 describe('Test hospital routes', () => {
+  let token
+
+  beforeAll(async (done) => {
+    const user = {
+      email: 'daniel10.-@gmai.com',
+      password: '123456'
+    }
+    const response = await api.post('/api/users/login').send(user)
+    console.log(response,'Before')
+    token = response.body.succesfull
+    done()
+  })
+
   afterAll(() => {
     server.close()
     db.end();
   })
   
   test('Get /api/hospitals returned as json', async () => {
-    await api.get('/api/hospitals').expect(200).expect('Content-Type', /application\/json/)
+    console.log(token)
+    await api.get('/api/hospitals').expect(200).expect('Content-Type', /application\/json/).set('user_token', token)
   })
 
   test('Get /api/hospitals there are 4 hospitals', async () => {
-    const { body } = await api.get('/api/hospitals')
+    const { body } = await api.get('/api/hospitals').set('user_token', token)
     expect(body).toHaveProperty('hospitals')
     expect(body.hospitals).toHaveLength(4);
   }) 
   
   test('Get /api/hospitals by id = 1', async () => {
     const id = 1
-    const response = await api.get(`'/api/hospitals/'${id}`)
-    console.log(response)
+    const response = await api.get(`'/api/hospitals/'${id}`).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body.id).toBe(id)
@@ -34,7 +47,7 @@ describe('Test hospital routes', () => {
       name: 'Hospital Pensiones',
       city: 'Merida'
     }
-    const response = await api.post('/api/hospitals').send(newHospital)
+    const response = await api.post('/api/hospitals').send(newHospital).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body).toHaveProperty('id')
@@ -47,8 +60,7 @@ describe('Test hospital routes', () => {
       names: 'Hospital Mexicano',
       city: 'Mexico'
     }
-    const response = await api.put(`/api/hospital/${id}`).send(hospital)
-    console.log(response)
+    const response = await api.put(`/api/hospital/${id}`).send(hospital).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Updated Successfully')
@@ -56,8 +68,7 @@ describe('Test hospital routes', () => {
 
   test('DELETE a hospital by id = 1', async () => {
     const id = 1
-    const response = await api.delete(`/api/hospital/${id}`)
-    console.log(response)
+    const response = await api.delete(`/api/hospital/${id}`).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(400)
     expect(body).toHaveProperty('message', 'Deleted successfully.')

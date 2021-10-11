@@ -5,26 +5,37 @@ const db = require('../../config/db.config.js')
 const api = supertest(app)
 
 describe('Test patients routes /api/patients', () => {
-  afterAll(() => {
+  let token
+  beforeAll(async () => {
+    const user = {
+      email: 'daniel10.-@gmai.com',
+      password: '123456'
+    }
+    const response = await api.post('/api/users/login').send(user)
+    token = response.body.succesfull
+  })
+
+  afterAll(async () => {
     server.close()
     db.end();
   })
   
   test('Get all patients returned as json', async () => {
-    await api.get('/api/patients').expect(200).expect('Content-Type', /application\/json/)
+    await api.get('/api/patients').expect(200).expect('Content-Type', /application\/json/).set('user_token', token)
   })
 
   test('GET all patients', async () => {
-    const { body } = await api.get('/api/patients')
+    const { body } = await api.get('/api/patients').set('user_token', token)
     expect(body).toHaveProperty('patients')
     expect(body.patients).toHaveLength(5);
   })
   
   test('GET patient by Id = 1', async () => {
     const id = 1
-    const response = await api.get(`/api/patients/${id}`)
+    const response = await api.get(`/api/patients/${id}`).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
+    console.log(body)
     expect(body.id).toBe(id)
   })
 
@@ -42,7 +53,7 @@ describe('Test patients routes /api/patients', () => {
       guardian_phone: '9995236458',
     }
 
-    const response = await api.post('/api/patients').send(patient)
+    const response = await api.post('/api/patients').send(patient).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body).toHaveProperty('patient_id')
@@ -63,8 +74,7 @@ describe('Test patients routes /api/patients', () => {
       guardian_name: 'Karina  Canche',
       guardian_phone: '9995236458',
     }
-    const response = await api.put(`/api/patients/${id}`).send(patient)
-    console.log(response)
+    const response = await api.put(`/api/patients/${id}`).send(patient).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Updated Successfully')
@@ -73,7 +83,7 @@ describe('Test patients routes /api/patients', () => {
 
   test('DELETE a patient by id = 1', async () => {
     const id = 1
-    const response = await api.delete(`/api/patients/${id}`)
+    const response = await api.delete(`/api/patients/${id}`).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Deleted successfully.')
