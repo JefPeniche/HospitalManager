@@ -148,19 +148,19 @@ describe('Test All routes', () => {
   //   expect(body.guardian_id).not.toBeNaN()
   // })
 
-  test('PUT a guardian',async () => {
-    const id = 5
-    const guardian = {
-      id_patient: id,
-      guardian_name: 'Karina Canche Canche',
-      guardian_phone: '9995236458',
-    }
-    const response = await api.put(`/api/guardian/${id}`).send(guardian).set('user_token', token)
-    console.log(response)
-    const { body, status } = response
-    expect(status).toBe(200)
-    expect(body).toHaveProperty('message', 'Updated Successfully')
-  })
+  // test('PUT a guardian',async () => {
+  //   const id = 5
+  //   const guardian = {
+  //     id_patient: id,
+  //     guardian_name: 'Karina Canche Canche',
+  //     guardian_phone: '9995236458',
+  //   }
+  //   const response = await api.put(`/api/guardian/${id}`).send(guardian).set('user_token', token)
+  //   console.log(response)
+  //   const { body, status } = response
+  //   expect(status).toBe(200)
+  //   expect(body).toHaveProperty('message', 'Updated Successfully')
+  // })
 
   test('DELETE a guardian by id = 2',async () => {
     const id = 2
