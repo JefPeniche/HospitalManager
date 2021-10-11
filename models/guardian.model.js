@@ -1,5 +1,7 @@
 "use strict";
 const dbConnector = require("../config/db.config");
+const querySelectGuardians = "SELECT Guardians.*,"
+    +" Guardians.name as guardians_name, Guardians.phone as guardians_phone FROM Guardians"  
 
 exports.create = (guardian, response) => {
   dbConnector.query(
@@ -19,7 +21,7 @@ exports.findAll = (response) => {
 
 exports.find = (guardianId, response) => {
   dbConnector.query(
-    querySelectPatients + " WHERE Guardians.id = ?",
+    querySelectGuardians + " WHERE Guardians.id = ?",
     guardianId,
     (error, result) => {
       error ? response(error) : response(false, result);

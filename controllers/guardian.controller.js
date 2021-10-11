@@ -2,6 +2,7 @@ const Guardian = require('../models/guardian.model');
 
 exports.create = (request, response) => {    
     const data = { 
+        id_patient: request.body.id_patient,
         name: request.body.name, 
         phone: request.body.phone 
     }
@@ -65,7 +66,7 @@ exports.update = (request, response) => {
         if(!bodyGuardian.isCorrect)
             response.status(400).send({ message: 'Incorrect data.' });
         
-        else guardian.update(id, bodyGuardian.data, 
+        else Guardian.update(id, bodyGuardian.data, 
             (error) => {  
                 if (error)  response.status(500).send(
                     { message: 'DB internal error.' });
@@ -94,7 +95,7 @@ exports.delete = (request, response) => {
             if (error)  response.status(500).send(
                 { message: 'DB internal error. ' });
             
-            else  guardian.delete(id,
+            else  Guardian.delete(id,
                 (error) => {
                     if (error)  response.status(500).send(
                         { message: 'DB internal error. '});
