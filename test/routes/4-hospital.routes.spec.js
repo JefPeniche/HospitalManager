@@ -4,18 +4,16 @@ const db = require('../../config/db.config.js')
 
 const api = supertest(app)
 
-describe('Test hospital routes', () => {
+describe('Hospital routes', () => {
   let token
 
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     const user = {
       email: 'daniel10.-@gmai.com',
       password: '123456'
     }
     const response = await api.post('/api/users/login').send(user)
-    console.log(response,'Before')
     token = response.body.succesfull
-    done()
   })
 
   afterAll(() => {
@@ -24,7 +22,6 @@ describe('Test hospital routes', () => {
   })
   
   test('Get /api/hospitals returned as json', async () => {
-    console.log(token)
     await api.get('/api/hospitals').expect(200).expect('Content-Type', /application\/json/).set('user_token', token)
   })
 
@@ -36,7 +33,7 @@ describe('Test hospital routes', () => {
   
   test('Get /api/hospitals by id = 1', async () => {
     const id = 1
-    const response = await api.get(`'/api/hospitals/'${id}`).set('user_token', token)
+    const response = await api.get(`/api/hospitals/${id}`).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body.id).toBe(id)
@@ -57,10 +54,10 @@ describe('Test hospital routes', () => {
   test('PUT a hospital', async () => {
     const id = 1
     const hospital = {
-      names: 'Hospital Mexicano',
+      name: 'Hospital Mexicano',
       city: 'Mexico'
     }
-    const response = await api.put(`/api/hospital/${id}`).send(hospital).set('user_token', token)
+    const response = await api.put(`/api/hospitals/${id}`).send(hospital).set('user_token', token)
     const { body, status } = response
     expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Updated Successfully')
@@ -68,11 +65,10 @@ describe('Test hospital routes', () => {
 
   test('DELETE a hospital by id = 1', async () => {
     const id = 1
-    const response = await api.delete(`/api/hospital/${id}`).set('user_token', token)
+    const response = await api.delete(`/api/hospitals/${id}`).set('user_token', token)
     const { body, status } = response
-    expect(status).toBe(400)
+    expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Deleted successfully.')
   })
 
-})
-
+});

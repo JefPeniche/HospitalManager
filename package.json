@@ -4,7 +4,7 @@
   "description": "CRUD exercise DevOps asigment",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest index.spec.js",
     "start": "node server.js"
   },
   "author": "",

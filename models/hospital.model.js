@@ -1,5 +1,5 @@
 'use strict';
-const dbConnector = require('../config/db.config');ç
+const dbConnector = require('../config/db.config');
 const querySelectHospital = "SELECT Hospitals.*,"
     +" Hospitals.name as hospital_name, Hospitals.city as hospital_city FROM Hospitals"  
 

@@ -4,7 +4,7 @@ const db = require('../../config/db.config.js')
 
 const api = supertest(app)
 
-describe('Test patients routes /api/patients', () => {
+module.exports = describe('Patient routes', () => {
   let token
   beforeAll(async () => {
     const user = {
@@ -88,4 +88,4 @@ describe('Test patients routes /api/patients', () => {
     expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Deleted successfully.')
   })
-})
+});

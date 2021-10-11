@@ -4,7 +4,7 @@ const db = require('../../config/db.config.js')
 
 const api = supertest(app)
 
-describe('Test patients routes /api/patients', () => {
+describe('Guardian routes', () => {
   let token
   beforeAll(async () => {
     const user = {
@@ -27,7 +27,7 @@ describe('Test patients routes /api/patients', () => {
   test('GET all guardians', async () => {
     const { body } = await api.get('/api/guardians').set('user_token', token)
     expect(body).toHaveProperty('guardians')
-    expect(body.guardians).toHaveLength(5);
+    expect(body.guardians).toHaveLength(4);
   })
   
   test('GET guardian by Id = 1',async () => {
@@ -70,4 +70,4 @@ describe('Test patients routes /api/patients', () => {
     expect(status).toBe(200)
     expect(body).toHaveProperty('message', 'Deleted successfully.')
   })
-})
+});

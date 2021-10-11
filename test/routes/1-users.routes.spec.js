@@ -4,7 +4,7 @@ const db = require('../../config/db.config.js')
 
 const api = supertest(app)
 
-describe('Test users routes /api/users', () => {
+const usertest = describe('User routes', () => {
   let token
   afterAll(() => {
     server.close()
@@ -45,5 +45,6 @@ describe('Test users routes /api/users', () => {
     expect(status).toBe(200)
     expect(body).not.toBeUndefined()
   })
-  
-})
+});
+
+module.exports = usertest

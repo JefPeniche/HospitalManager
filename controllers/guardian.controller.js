@@ -47,6 +47,7 @@ exports.find = (request, response) => {
             if (error)  response.status(500).send(
                 { message: 'DB internal error.' + error});
             else{
+                console.log(guardian, 'guardian')
                 if(guardian.length > 0)  response.status(200).json(
                     guardian[0]
                 );

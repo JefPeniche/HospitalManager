@@ -89,8 +89,7 @@ exports.delete = (request, response) => {
         (error) => {
             if (error)  response.status(500).send(
                 { message: 'DB internal error. ' });
-            
-            else  hospital.delete(id,
+            else  Hospital.delete(id,
                 (error) => {
                     if (error)  response.status(500).send(
                         { message: 'DB internal error. '});
