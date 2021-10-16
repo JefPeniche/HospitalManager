@@ -8,8 +8,8 @@ const dbConnector = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-dbConnector.connect(function(error) {  
-    if (error) throw error;  
+dbConnector.connect(function(error) {
+    if (error) throw error;
 });
 
 module.exports = dbConnector;
