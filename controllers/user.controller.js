@@ -2,6 +2,7 @@ const Users = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jwt-simple");
 const moment = require("moment");
+const { allKeysHaveValue }  = require('../utilities/index')
 
 exports.register = async (request, response) => {
     const data = {
@@ -9,32 +10,18 @@ exports.register = async (request, response) => {
         password: bcrypt.hashSync(request.body.password, 10),
         name: request.body.name,
     };
-    if (Object.keys(data).some((key) => typeof data[key] === "undefined") || Object.keys(data).some((key) => data[key].length === 0)) response.status(400).send({ message: "Incomplete data." });
-    else {
-        const result = await Users.insert(data);
-        response.json(result);
-    }
+
+    if (!allKeysHaveValue(data)) return response.status(400).send({ message: "Incomplete data." })
+    const result = await Users.insert(data);
+    return response.json(result);
 };
 
 exports.login = async (req, res) => {
     const user = await Users.getByEmail(req.body.email);
-    if (user === undefined) {
-        res.json({
-            error: "Error, user not found",
-        });
-    } else {
-        const matchPassword = bcrypt.compareSync(req.body.password, user.password);
-        if (!matchPassword) {
-            res.json({
-                error: "Error, wrong password",
-            });
-        } else {
-            res.json({
-                succesfull: createToken(user),
-                done: "Welcome again!",
-            });
-        }
-    }
+
+    if(!user) return res.json({ error: "Error, user not found" })
+    const matchPassword = bcrypt.compareSync(req.body.password, user.password);
+    return matchPassword ? res.json({ succesfull: createToken(user), done: "Welcome again!" }) : res.json({ error: "Error, wrong password" })
 };
 
 exports.getAll = async (req, res) => {
