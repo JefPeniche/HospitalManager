@@ -1,4 +1,5 @@
 const Hospital = require('../models/hospital.model');
+const { allKeysHaveValue, isValidId }  = require('../utilities/index')
 
 exports.create = (request, response) => {    
     const data = { 
@@ -6,101 +7,49 @@ exports.create = (request, response) => {
         city: request.body.city 
     }
 
-    if( (Object.keys(data)).some((key)=> typeof data[key] === 'undefined') ||
-    (Object.keys(data)).some((key)=> data[key].length === 0))
-        response.status(400).send({ message: 'Incomplete data.' });
-    else{
-        Hospital.create(data, 
-            (error, hospital_id) => {  
-                if (error)  response.status(500).send(
-                    { message: 'DB internal error.' });
-                else
-                response.status(200).json(
-                    { id: hospital_id }
-                );
-            }
-        );
-    }   
+    if(!allKeysHaveValue(data)) return response.status(400).send({ message: 'Incomplete data.' });
+    
+    const sendHospitalIdOrError = (error, hospital_id) => error ? response.status(500).send({ message: 'DB internal error.'}) : response.status(200).json({ id: hospital_id })
+    Hospital.create(data, sendHospitalIdOrError)
 }
 
 exports.findAll = (request, response) => {    
-    Hospital.findAll( 
-        (error, hospitals)=> {  
-            if (error)  response.status(500).send(
-                { error: true, message: 'DB internal error.' });
-            else
-            response.status(200).json(
-                { hospitals: hospitals }
-            );
-        }
-    );
+  const sendHospitalsOrError = (error, hospitals)=> error ? response.status(500).send({ error: true, message: 'DB internal error.' }) : response.status(200).json({ hospitals: hospitals })
+  Hospital.findAll(sendHospitalsOrError);
 }
 
 
 exports.find = (request, response) => {
     const id = request.params.id;
-    if(typeof id === "undefined" || id<=0)
-        response.status(400).send({ message: 'Invalid id.' });
-    
-    else Hospital.find(id,
-        (error, hospital) => {
-            if (error)  response.status(500).send(
-                { message: 'DB internal error.' + error});
-            else{
-                if(hospital.length > 0)  response.status(200).json(
-                    hospital[0]
-                );
-                else response.status(200).json({});
-            }
-        }
-    )
+    if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
+
+    const sendHospitalOrError = (error, hospital) => {
+      if (error) return response.status(500).send({ message: 'DB internal error.' + error})
+      if(hospital.length > 0) return response.status(200).json(hospital[0]) 
+      return response.status(200).json({});
+    }
+    Hospital.find(id, sendHospitalOrError)
 }
 
 exports.update = (request, response) => {
     const id = request.params.id;
-    if(typeof id === "undefined" || id<=0)
-        response.status(400).send({ message: 'Invalid id.' });
-    else{
-        bodyhospital = getDatahospital(request.body);
 
-        if(!bodyhospital.isCorrect)
-            response.status(400).send({ message: 'Incorrect data.' });
+    if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
+    bodyhospital = getDatahospital(request.body);
+
+    if(!bodyhospital.isCorrect) return response.status(400).send({ message: 'Incorrect data.' });
         
-        else Hospital.update(id, bodyhospital.data, 
-            (error) => {  
-                if (error)  response.status(500).send(
-                    { message: 'DB internal error.' });
-                else  response.status(200).json(
-                    { message: 'Updated Successfully'}
-                    );
-            }
-        )
-    }
+    const sendSuccesMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Updated Successfully'})
+    Hospital.update(id, bodyhospital.data, sendSuccesMessageOrError)
 }
-
-
 
 exports.delete = (request, response) => {
     const id = request.params.id;
-    if(typeof id === "undefined" || id<=0)
-        response.status(400).send({ message: 'Invalid id.' });
 
-    else Hospital.delete(id, 
-        (error) => {
-            if (error)  response.status(500).send(
-                { message: 'DB internal error. ' });
-            else  Hospital.delete(id,
-                (error) => {
-                    if (error)  response.status(500).send(
-                        { message: 'DB internal error. '});
-                    
-                    else  response.status(200).json(
-                        {  message: 'Deleted successfully.' }
-                    );
-                }
-            )
-        }
-    )
+    if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
+
+    const sendSuccesMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error. ' }) : response.status(200).json({ message: 'Deleted successfully.' })
+    Hospital.delete(id, sendSuccesMessageOrError)
 }
 
 const getDatahospital = (body) => {
@@ -109,14 +58,5 @@ const getDatahospital = (body) => {
         city : body.city,
     }
     
-    return {isCorrect: validateData(data), data: data}
-}
-
-const validateData = (data) =>{
-    let isCorrect = true;
-    if((Object.keys(data)).some((key)=> typeof data[key] === 'undefined') ||
-        (Object.keys(data)).some((key)=> data[key].length === 0))
-            isCorrect = false;
-    
-    return isCorrect;
+    return {isCorrect: allKeysHaveValue(data), data: data}
 }
