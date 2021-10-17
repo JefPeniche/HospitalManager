@@ -5,7 +5,9 @@ const { allKeysHaveValue, isValidId, isSexValid }  = require('../utilities/index
 exports.create = (request, response) => {    
     bodyPatient = getDataPatient(request.body);
     bodyGuardian = getDataGuardian(request.body);
-    
+
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
+
     if(!bodyPatient.isCorrect || !bodyGuardian.isCorrect) return response.status(400).send({ message: 'Incorrect data.' });
     
     const sendPatientOrError = error => {
@@ -36,6 +38,9 @@ exports.find = (request, response) => {
 
 exports.update = (request, response) => {
     const id = request.params.id;
+
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
+
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' }); 
     bodyPatient = getDataPatient(request.body);
     bodyGuardian = getDataGuardian(request.body);

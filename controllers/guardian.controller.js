@@ -1,5 +1,6 @@
 const Guardian = require('../models/guardian.model');
-const { allKeysHaveValue, isValidId, isSexValid }  = require('../utilities/index')
+const { logger } = require('../config/winston/winston.config')
+const { allKeysHaveValue, isValidId, hiddenSensitiveData }  = require('../utilities/index')
 
 exports.create = (request, response) => {    
     const data = { 
@@ -7,6 +8,8 @@ exports.create = (request, response) => {
         name: request.body.name, 
         phone: request.body.phone 
     }
+
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
 
     if(!allKeysHaveValue(data)) return response.status(400).send({ message: 'Incomplete data.' });
     
@@ -38,6 +41,8 @@ exports.find = (request, response) => {
 
 exports.update = (request, response) => {
     const id = request.params.id;
+
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
 
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
     const isDataGuardianCorrect = getDataGuardian(request.body);

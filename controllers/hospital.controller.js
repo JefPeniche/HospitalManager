@@ -7,6 +7,8 @@ exports.create = (request, response) => {
         city: request.body.city 
     }
 
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
+
     if(!allKeysHaveValue(data)) return response.status(400).send({ message: 'Incomplete data.' });
     
     const sendHospitalIdOrError = (error, hospital_id) => error ? response.status(500).send({ message: 'DB internal error.'}) : response.status(200).json({ id: hospital_id })
@@ -33,6 +35,8 @@ exports.find = (request, response) => {
 
 exports.update = (request, response) => {
     const id = request.params.id;
+
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
 
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
     bodyhospital = getDatahospital(request.body);

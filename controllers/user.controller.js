@@ -2,7 +2,8 @@ const Users = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jwt-simple");
 const moment = require("moment");
-const { allKeysHaveValue }  = require('../utilities/index')
+const { logger } = require('../config/winston/winston.config')
+const { allKeysHaveValue, hiddenSensitiveData }  = require('../utilities/index')
 
 exports.register = async (request, response) => {
     const data = {
@@ -11,6 +12,8 @@ exports.register = async (request, response) => {
         name: request.body.name,
     };
 
+    logger.debug(`body: ${hiddenSensitiveData(req.body)}`)
+
     if (!allKeysHaveValue(data)) return response.status(400).send({ message: "Incomplete data." })
     const result = await Users.insert(data);
     return response.json(result);
@@ -18,6 +21,8 @@ exports.register = async (request, response) => {
 
 exports.login = async (req, res) => {
     const user = await Users.getByEmail(req.body.email);
+
+    logger.debug(`body: ${hiddenSensitiveData(req.body)}`)
 
     if(!user) return res.json({ error: "Error, user not found" })
     const matchPassword = bcrypt.compareSync(req.body.password, user.password);
