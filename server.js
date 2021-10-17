@@ -4,6 +4,7 @@ const usersRoutes = require("./routes/users.routes");
 const hospitalRoutes = require("./routes/hospital.routes");
 const patientRoutes = require("./routes/patient.routes");
 const guardiansRoutes = require("./routes/guardian.routes");
+const { loggerDefaultRoute } = require('./config/winston/winston.config')
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(function (req, res, next) {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(loggerDefaultRoute)
 
 app.get("/", (req, res) => {
     res.send("Digital Hospital Server");
