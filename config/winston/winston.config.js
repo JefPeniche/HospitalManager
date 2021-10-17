@@ -1,23 +1,22 @@
-const { createLogger, format, transports, config } = require('winston')
-const { combine, timestamp, json } = format;
+const { createLogger, format, transports, config, error } = require('winston')
+const { combine, timestamp, json, errors} = format;
 const path = require('path');
 
 const logger = createLogger({
+  level: 'debug',
    format: combine(
-       timestamp({
-           format: 'YYYY-MM-DD HH:mm:ss'
-       }),
-       json()
+       json(),
+       errors({ stack: true })
      ),
    transports: [
        new transports.Console(),
-       new transports.File({ filename: 'combined.log', maxsize: 104857600, dirname: path.join(__dirname, '../', 'logs')})
+       new transports.File({ maxsize: 104857600, dirname: path.join(__dirname, '../', 'logs')})
      ],
  });
 
 loggerDefaultRoute = (req, res, next) => {
-  console.log('Hi')
-  logger.log('debug', 'Now my debug messages are written to console!');
+  const { method, url, params, headers } = req
+  logger.info(`${method} | ${url} | ${JSON.stringify(params)} | ${JSON.stringify(headers)}`);
   next()
 }
 
@@ -25,33 +24,3 @@ module.exports = {
   loggerDefaultRoute,
   logger
 }
-// module.exports = {
-//   /**
-//   * Log debuging messages
-//   * @param  {String} message
-//   */
-//   debug: function(message) {
-//     logger.log('debug','Data to log.');
-//   },
-//   /**
-//   * Log information messages
-//   * @param  {String} message
-//   */
-//   info: function(message) {
-//     logger.log('info','Data to log.');
-//   },
-//   /**
-//   * Log warning messages
-//   * @param  {String} message
-//   */
-//   warn: function(message) {
-//     logger.log('warn','Data to log.');
-//   },
-//   /**
-//   * Log error messages
-//   * @param  {String} message
-//   */
-//   error: function(message) {
-//     logger.log('error','Data to log.');
-//   }
-// };
