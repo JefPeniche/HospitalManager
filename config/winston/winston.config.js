@@ -10,7 +10,7 @@ const logger = createLogger({
      ),
    transports: [
        new transports.Console(),
-       new transports.File({ maxsize: 104857600, dirname: path.join(__dirname, '../', 'logs')})
+       new transports.File({ maxsize: 104857600, dirname: path.join(__dirname, '../../', 'logs')})
      ],
  });
 
