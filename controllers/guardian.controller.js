@@ -1,4 +1,5 @@
 const Guardian = require('../models/guardian.model');
+const { allKeysHaveValue, isValidId, isSexValid }  = require('../utilities/index')
 
 exports.create = (request, response) => {    
     const data = { 
@@ -7,126 +8,62 @@ exports.create = (request, response) => {
         phone: request.body.phone 
     }
 
-    if( (Object.keys(data)).some((key)=> typeof data[key] === 'undefined') ||
-    (Object.keys(data)).some((key)=> data[key].length === 0))
-        response.status(400).send({ message: 'Incomplete data.' });
-    else{
-        Guardian.create(data, 
-            (error, guardian_id) => {  
-                if (error)  response.status(500).send(
-                    { message: 'DB internal error.' });
-                else
-                response.status(200).json(
-                    { id: guardian_id }
-                );
-            }
-        );
-    }   
+    if(!allKeysHaveValue(data)) return response.status(400).send({ message: 'Incomplete data.' });
+    
+    const createGuardianOrSendError = (error, guardian_id) => {
+        return error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ id: guardian_id })
+    }
+
+    Guardian.create(data, createGuardianOrSendError);
 }
 
 exports.findAll = (request, response) => {    
-    Guardian.findAll( 
-        (error, guardians)=> {  
-            if (error)  response.status(500).send(
-                { error: true, message: 'DB internal error.' });
-            else
-            response.status(200).json(
-                { guardians: guardians }
-            );
-        }
-    );
+  const SendGuardiansOrError = (error, guardians) => error ? response.status(500).send({ error: true, message: 'DB internal error.' }) : response.status(200).json({ guardians: guardians })
+  Guardian.findAll(SendGuardiansOrError);
 }
 
 exports.find = (request, response) => {
     const id = request.params.id;
-    if(typeof id === "undefined" || id<=0)
-        response.status(400).send({ message: 'Invalid id.' });
+
+    if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
     
-    else Guardian.find(id,
-        (error, guardian) => {
-            if (error)  response.status(500).send(
-                { message: 'DB internal error.' + error});
-            else{
-                console.log(guardian, 'guardian')
-                if(guardian.length > 0)  response.status(200).json(
-                    guardian[0]
-                );
-                else response.status(200).json({});
-            }
-        }
-    )
+    const sendGuardianOrError = (error, guardian) => {
+      if(error) return response.status(500).send({ message: 'DB internal error.' + error})
+      if(guardian.length > 0) return response.status(200).json(guardian[0])
+      return response.status(200).json({});
+    }
+
+    Guardian.find(id, sendGuardianOrError)
 }
 
 exports.update = (request, response) => {
     const id = request.params.id;
-    if(typeof id === "undefined" || id<=0)
-        response.status(400).send({ message: 'Invalid id.' });
-    else{
-        bodyGuardian = getDataGuardian(request.body);
 
-        if(!bodyGuardian.isCorrect)
-            response.status(400).send({ message: 'Incorrect data.' });
-        
-        else Guardian.update(id, bodyGuardian.data, 
-            (error) => {  
-                if (error)  response.status(500).send(
-                    { message: 'DB internal error.' });
-                else  Guardian.update(id, bodyGuardian.data,
-                    (error, result)=>{
-                        if (error)  response.status(500).send(
-                            { message: 'DB internal error.' });
-                        else  response.status(200).json(
-                            { message: 'Updated Successfully'}
-                        );
-                    }
-                )
-            }
-        );
-    }
+    if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
+    const isDataGuardianCorrect = getDataGuardian(request.body);
+
+    if(!isDataGuardianCorrect.isCorrect) return response.status(400).send({ message: 'Incorrect data.' })
+
+    const sendUpdateMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Updated Successfully'})
+
+    Guardian.update(id, bodyGuardian.data, sendUpdateMessageOrError);
 }
 
-
 exports.delete = (request, response) => {
-    const id = request.params.id;
-    if(typeof id === "undefined" || id<=0)
-        response.status(400).send({ message: 'Invalid id.' });
-    
-    else Guardian.delete(id, 
-        (error) => {
-            if (error)  response.status(500).send(
-                { message: 'DB internal error. ' });
-            
-            else  Guardian.delete(id,
-                (error) => {
-                    if (error)  response.status(500).send(
-                        { message: 'DB internal error. '});
-                    
-                    else  response.status(200).json(
-                        {  message: 'Deleted successfully.' }
-                    );
-                }
-            )
-        }
-    )
+  const id = request.params.id;
+  if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
+  
+  const deletedGuardianOrSendError = (error, result) => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Deleted successfully.' })
+
+  Guardian.delete(id, deletedGuardianOrSendError) 
 }
 
 const getDataGuardian = (body) => {
-    const data = {
-        name : body.guardian_name,
-        phone : body.guardian_phone
-    }
+  const data = {
+      name : body.guardian_name,
+      phone : body.guardian_phone
+  }
 
-    return {isCorrect: validateData(data), data: data}
-}
-
-const validateData = (data) =>{
-    let isCorrect = true;
-    if((Object.keys(data)).some((key)=> typeof data[key] === 'undefined') ||
-        (Object.keys(data)).some((key)=> data[key].length === 0))
-            isCorrect = false;
-    
-    else if(data.sex && data.sex!=='M' && data.sex!=='F')
-        isCorrect = false
-    
-    return isCorrect;
+  const isCorrect = allKeysHaveValue(data)
+  return {isCorrect, data: data}
 }
