@@ -4,7 +4,7 @@ USE `DigitalHospital`;
 
 CREATE TABLE `Users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `email` varchar(30) NOT NULL,
+  `email` varchar(30) NOT NULL UNIQUE,
   `password` varchar(100) NOT NULL,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
