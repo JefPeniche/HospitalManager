@@ -8,7 +8,10 @@ exports.create = (request, response) => {
 
     logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
 
-    if(!bodyPatient.isCorrect || !bodyGuardian.isCorrect) return response.status(400).send({ message: 'Incorrect data.' });
+    if(!bodyPatient.isCorrect || !bodyGuardian.isCorrect) {
+      logger.warn('Incomplete data')
+      return response.status(400).send({ message: 'Incorrect data.' });
+    }
     
     const sendPatientOrError = error => {
       if (error) return  response.status(500).send({message: 'DB internal error. ' + error});
@@ -45,7 +48,10 @@ exports.update = (request, response) => {
     bodyPatient = getDataPatient(request.body);
     bodyGuardian = getDataGuardian(request.body);
 
-    if(!bodyPatient.isCorrect || !bodyGuardian.isCorrect) return response.status(400).send({ message: 'Incorrect data.' });
+    if(!bodyPatient.isCorrect || !bodyGuardian.isCorrect) {
+      logger.warn('Incomplete data')
+      return response.status(400).send({ message: 'Incorrect data.' });
+    }
         
     const updatePatientAndGuardian = error => {
       if(error) return response.status(500).send( { message: 'DB internal error.' })

@@ -11,7 +11,10 @@ exports.create = (request, response) => {
 
     logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
 
-    if(!allKeysHaveValue(data)) return response.status(400).send({ message: 'Incomplete data.' });
+    if (!allKeysHaveValue(data)) {
+      logger.warn('Incomplete data')
+      return response.status(400).send({ message: "Incomplete data." })
+    }
     
     const createGuardianOrSendError = (error, guardian_id) => {
         return error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ id: guardian_id })
@@ -47,7 +50,10 @@ exports.update = (request, response) => {
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
     const isDataGuardianCorrect = getDataGuardian(request.body);
 
-    if(!isDataGuardianCorrect.isCorrect) return response.status(400).send({ message: 'Incorrect data.' })
+    if(!isDataGuardianCorrect.isCorrect) {
+      logger.warn('Incomplete data')
+      return response.status(400).send({ message: 'Incorrect data.' })
+    }
 
     const sendUpdateMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Updated Successfully'})
 
