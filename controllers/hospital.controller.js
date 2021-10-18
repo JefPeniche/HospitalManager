@@ -1,5 +1,6 @@
 const Hospital = require('../models/hospital.model');
 const { allKeysHaveValue, isValidId }  = require('../utilities/index')
+const { logger } = require('../config/winston/winston.config')
 
 exports.create = (request, response) => {    
     const data = { 
@@ -14,12 +15,25 @@ exports.create = (request, response) => {
       return response.status(400).send({ message: "Incomplete data." })
     }
     
-    const sendHospitalIdOrError = (error, hospital_id) => error ? response.status(500).send({ message: 'DB internal error.'}) : response.status(200).json({ id: hospital_id })
+    const sendHospitalIdOrError = (error, hospital_id) => {
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.'})
+      } 
+      return response.status(200).json({ id: hospital_id })
+    } 
+    
     Hospital.create(data, sendHospitalIdOrError)
 }
 
 exports.findAll = (request, response) => {    
-  const sendHospitalsOrError = (error, hospitals)=> error ? response.status(500).send({ error: true, message: 'DB internal error.' }) : response.status(200).json({ hospitals: hospitals })
+  const sendHospitalsOrError = (error, hospitals) =>  {
+    if(error) {
+      logger.error(error)
+      return response.status(500).send({ error: true, message: 'DB internal error.' })
+    }
+    return response.status(200).json({ hospitals: hospitals })
+  }
   Hospital.findAll(sendHospitalsOrError);
 }
 
@@ -29,7 +43,10 @@ exports.find = (request, response) => {
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
 
     const sendHospitalOrError = (error, hospital) => {
-      if (error) return response.status(500).send({ message: 'DB internal error.' + error})
+      if (error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.' + error})
+      } 
       if(hospital.length > 0) return response.status(200).json(hospital[0]) 
       return response.status(200).json({});
     }
@@ -49,7 +66,13 @@ exports.update = (request, response) => {
       return response.status(400).send({ message: 'Incorrect data.' });
     }
         
-    const sendSuccesMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Updated Successfully'})
+    const sendSuccesMessageOrError = error => {
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.' })
+      }
+      return response.status(200).json({ message: 'Updated Successfully'})
+    }
     Hospital.update(id, bodyhospital.data, sendSuccesMessageOrError)
 }
 
@@ -58,7 +81,13 @@ exports.delete = (request, response) => {
 
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
 
-    const sendSuccesMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error. ' }) : response.status(200).json({ message: 'Deleted successfully.' })
+    const sendSuccesMessageOrError = error => {
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.' })
+      }
+      return response.status(200).json({ message: 'Deleted successfully.' })
+    }
     Hospital.delete(id, sendSuccesMessageOrError)
 }
 

@@ -1,5 +1,6 @@
 const Patient = require('../models/patient.model');
 const Guardian = require('../models/guardian.model');
+const { logger } = require('../config/winston/winston.config')
 const { allKeysHaveValue, isValidId, isSexValid }  = require('../utilities/index')
 
 exports.create = (request, response) => {    
@@ -14,16 +15,32 @@ exports.create = (request, response) => {
     }
     
     const sendPatientOrError = error => {
-      if (error) return  response.status(500).send({message: 'DB internal error. ' + error});
+      if (error) {
+        logger.error(error)
+        return  response.status(500).send({message: 'DB internal error. ' + error});
+      } 
       const data = {id_patient: resultPatient.insertId ,...bodyGuardian.data}
-      const updateGuardian = (error, resultGuardian) => error ? response.status(500).send( { message: ' DB internal error. ' + error}) : response.status(200).json({ patient_id: resultPatient.insertId })
+      const updateGuardian = (error, resultGuardian) => {
+        if(error) {
+          logger.error(error)
+          return response.status(500).send( { message: ' DB internal error. ' + error})
+        }
+        return response.status(200).json({ patient_id: resultPatient.insertId })
+      }
       Guardian.create(data,updateGuardian)
     }
     Patient.create(bodyPatient.data, sendPatientOrError)
 }
 
 exports.findAll = (request, response) => {
-  const sendAllPatientsOrError = (error, patients) => error ? response.status(500).send( { message: 'DB internal error.'}) : response.status(200).json( { patients: patients })
+  const sendAllPatientsOrError = (error, patients) => {
+    if(error) {
+      logger.error(error)
+      return response.status(500).send( { message: 'DB internal error.'})
+    }
+    return response.status(200).json( { patients: patients })
+  }
+  
   Patient.findAll(sendAllPatientsOrError)
 }
 
@@ -32,7 +49,10 @@ exports.find = (request, response) => {
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' }); 
     
     const sendPatientOrError = (error, patient) => {
-      if (error) return response.status(500).send( { message: 'DB internal error.' + error});
+      if (error) {
+        logger.error(error)
+        return response.status(500).send( { message: 'DB internal error.' + error});
+      }
       if(patient.length > 0) return response.status(200).json(patient[0]);
       return response.status(200).json({});
     }
@@ -54,8 +74,17 @@ exports.update = (request, response) => {
     }
         
     const updatePatientAndGuardian = error => {
-      if(error) return response.status(500).send( { message: 'DB internal error.' })
-      const updateGuardian = (error, result) =>error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Updated Successfully'})
+      if(error) {
+        logger.error(error)
+        return response.status(500).send( { message: 'DB internal error.' })
+      }
+      const updateGuardian = (error, result) => {
+        if(error) {
+          logger.error(error)
+          return response.status(500).send({ message: 'DB internal error.' })
+        }
+        return response.status(200).json({ message: 'Updated Successfully'})
+      }
       Guardian.update(id, bodyGuardian.data, updateGuardian)
     }
     Patient.update(id, bodyPatient.data, updatePatientAndGuardian);
@@ -68,8 +97,17 @@ exports.delete = (request, response) => {
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' }); 
     
     const deleteGuardianAndPatient = error => {
-      if(error) return response.status(500).send({ message: 'DB internal error. ' })
-      const deletePatient = error => error ? response.status(500).send({ message: 'DB internal error. '}) : response.status(200).json({  message: 'Deleted successfully.' })
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error. ' })
+      }
+      const deletePatient = error => {
+        if(error) {
+          logger.error(error)
+          return response.status(500).send({ message: 'DB internal error. '})
+        }
+        return response.status(200).json({  message: 'Deleted successfully.' })
+      }
       Patient.delete(id, error)
     }
 

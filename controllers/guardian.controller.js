@@ -17,14 +17,24 @@ exports.create = (request, response) => {
     }
     
     const createGuardianOrSendError = (error, guardian_id) => {
-        return error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ id: guardian_id })
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.' }) 
+      }
+      return response.status(200).json({ id: guardian_id })
     }
 
     Guardian.create(data, createGuardianOrSendError);
 }
 
 exports.findAll = (request, response) => {    
-  const SendGuardiansOrError = (error, guardians) => error ? response.status(500).send({ error: true, message: 'DB internal error.' }) : response.status(200).json({ guardians: guardians })
+  const SendGuardiansOrError = (error, guardians) => {
+    if(error) {
+      logger.error(error)
+      return response.status(500).send({ error: true, message: 'DB internal error.' })
+    }
+    return response.status(200).json({ guardians: guardians })
+  }
   Guardian.findAll(SendGuardiansOrError);
 }
 
@@ -34,7 +44,10 @@ exports.find = (request, response) => {
     if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
     
     const sendGuardianOrError = (error, guardian) => {
-      if(error) return response.status(500).send({ message: 'DB internal error.' + error})
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.' + error})
+      }
       if(guardian.length > 0) return response.status(200).json(guardian[0])
       return response.status(200).json({});
     }
@@ -55,7 +68,13 @@ exports.update = (request, response) => {
       return response.status(400).send({ message: 'Incorrect data.' })
     }
 
-    const sendUpdateMessageOrError = error => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Updated Successfully'})
+    const sendUpdateMessageOrError = error => {
+      if(error) {
+        logger.error(error)
+        return response.status(500).send({ message: 'DB internal error.' })
+      }
+      return response.status(200).json({ message: 'Updated Successfully'})
+    }
 
     Guardian.update(id, bodyGuardian.data, sendUpdateMessageOrError);
 }
@@ -64,7 +83,13 @@ exports.delete = (request, response) => {
   const id = request.params.id;
   if(!isValidId(id)) return response.status(400).send({ message: 'Invalid id.' });
   
-  const deletedGuardianOrSendError = (error, result) => error ? response.status(500).send({ message: 'DB internal error.' }) : response.status(200).json({ message: 'Deleted successfully.' })
+  const deletedGuardianOrSendError = (error, result) => {
+    if(error) {
+      logger.error(error)
+      return response.status(500).send({ message: 'DB internal error.' })
+    }
+    return response.status(200).json({ message: 'Deleted successfully.' })
+  }
 
   Guardian.delete(id, deletedGuardianOrSendError) 
 }

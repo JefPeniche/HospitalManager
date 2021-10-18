@@ -12,14 +12,19 @@ exports.register = async (request, response) => {
         name: request.body.name,
     };
 
-    logger.debug(`body: ${hiddenSensitiveData(req.body)}`)
+    logger.debug(`body: ${hiddenSensitiveData(request.body)}`)
 
     if (!allKeysHaveValue(data)) {
       logger.warn('Incomplete data')
       return response.status(400).send({ message: "Incomplete data." })
     }
-    const result = await Users.insert(data);
-    return response.json(result);
+    try {
+      const result = await Users.insert(data);
+      return response.json(result);
+    } catch (error) {
+      logger.error(error)
+      return response.status(500).send({ message: error })
+    }
 };
 
 exports.login = async (req, res) => {
@@ -36,8 +41,13 @@ exports.login = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
+  try {
     const users = await Users.getAll();
     res.json(users);
+  } catch (error) {
+    logger.error(error)
+    return response.status(500).send({ message: error })
+  }
 };
 
 const createToken = (user) => {
