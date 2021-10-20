@@ -3,6 +3,7 @@ const { allKeysHaveValue, isValidId, hiddenSensitiveData } = require("../utiliti
 const { logger } = require("../config/winston/winston.config");
 
 exports.create = (request, response) => {
+    logger.debug(`Hospital Controller create(${JSON.stringify(request.body)},  ${typeof response})`);
     const data = {
         name: request.body.name,
         city: request.body.city,
@@ -27,6 +28,8 @@ exports.create = (request, response) => {
 };
 
 exports.findAll = (request, response) => {
+    logger.debug(`Hospital Controller findALl(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const sendHospitalsOrError = (error, hospitals) => {
         if (error) {
             logger.error(error);
@@ -38,6 +41,8 @@ exports.findAll = (request, response) => {
 };
 
 exports.find = (request, response) => {
+    logger.debug(`Hospital Controller find(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const id = request.params.id;
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
@@ -53,6 +58,8 @@ exports.find = (request, response) => {
 };
 
 exports.update = (request, response) => {
+    logger.debug(`Hospital Controller update(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const id = request.params.id;
 
     logger.debug(`body: ${hiddenSensitiveData(request.body)}`);
@@ -76,6 +83,8 @@ exports.update = (request, response) => {
 };
 
 exports.delete = (request, response) => {
+    logger.debug(`Hospital Controller delete(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const id = request.params.id;
 
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
@@ -91,6 +100,8 @@ exports.delete = (request, response) => {
 };
 
 const getDatahospital = (body) => {
+    logger.debug(`Hospital Controller getData(${JSON.stringify(body)})`);
+
     const data = {
         name: body.name,
         city: body.city,

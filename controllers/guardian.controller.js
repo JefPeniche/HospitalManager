@@ -3,6 +3,7 @@ const { logger } = require("../config/winston/winston.config");
 const { allKeysHaveValue, isValidId, hiddenSensitiveData } = require("../utilities/index");
 
 exports.create = (request, response) => {
+    logger.debug(`Guardian Controller create(${JSON.stringify(request.body)},  ${typeof response})`);
     const data = {
         id_patient: request.body.id_patient,
         name: request.body.name,
@@ -28,6 +29,7 @@ exports.create = (request, response) => {
 };
 
 exports.findAll = (request, response) => {
+    logger.debug(`Guardian Controller findAll(${JSON.stringify(request.body)},  ${typeof response})`);
     const SendGuardiansOrError = (error, guardians) => {
         if (error) {
             logger.error(error);
@@ -39,6 +41,7 @@ exports.findAll = (request, response) => {
 };
 
 exports.find = (request, response) => {
+    logger.debug(`Guardian Controller find(${JSON.stringify(request.body)},  ${typeof response})`);
     const id = request.params.id;
 
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
@@ -56,6 +59,7 @@ exports.find = (request, response) => {
 };
 
 exports.update = (request, response) => {
+    logger.debug(`Guardian Controller update(${JSON.stringify(request.body)},  ${typeof response})`);
     const id = request.params.id;
 
     logger.debug(`body: ${hiddenSensitiveData(request.body)}`);
@@ -80,6 +84,7 @@ exports.update = (request, response) => {
 };
 
 exports.delete = (request, response) => {
+    logger.debug(`Guardian Controller delete(${JSON.stringify(request.body)},  ${typeof response})`);
     const id = request.params.id;
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
@@ -95,6 +100,7 @@ exports.delete = (request, response) => {
 };
 
 const getDataGuardian = (body) => {
+    logger.debug(`Guardian Controller getData(${JSON.stringify(body)})`);
     const data = {
         name: body.guardian_name,
         phone: body.guardian_phone,

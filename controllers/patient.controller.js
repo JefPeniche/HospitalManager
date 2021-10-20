@@ -4,6 +4,8 @@ const { logger } = require("../config/winston/winston.config");
 const { allKeysHaveValue, isValidId, isSexValid, hiddenSensitiveData } = require("../utilities/index");
 
 exports.create = (request, response) => {
+    logger.debug(`Patient Controller create(${JSON.stringify(request.body)},  ${typeof response})`);
+
     bodyPatient = getDataPatient(request.body);
     bodyGuardian = getDataGuardian(request.body);
 
@@ -33,6 +35,8 @@ exports.create = (request, response) => {
 };
 
 exports.findAll = (request, response) => {
+    logger.debug(`Patient Controller findAll(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const sendAllPatientsOrError = (error, patients) => {
         if (error) {
             logger.error(error);
@@ -45,6 +49,8 @@ exports.findAll = (request, response) => {
 };
 
 exports.find = (request, response) => {
+    logger.debug(`Patient Controller find(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const id = request.params.id;
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
@@ -60,6 +66,8 @@ exports.find = (request, response) => {
 };
 
 exports.update = (request, response) => {
+    logger.debug(`Patient Controller update(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const id = request.params.id;
 
     logger.debug(`body: ${hiddenSensitiveData(request.body)}`);
@@ -91,6 +99,8 @@ exports.update = (request, response) => {
 };
 
 exports.delete = (request, response) => {
+    logger.debug(`Patient Controller delete(${JSON.stringify(request.body)},  ${typeof response})`);
+
     const id = request.params.id;
 
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
@@ -114,6 +124,8 @@ exports.delete = (request, response) => {
 };
 
 const getDataPatient = (body) => {
+    logger.debug(`Patient Controller getDataPatient(${JSON.stringify(body)})`);
+
     const data = {
         names: body.names,
         last_name: body.last_name,
@@ -130,6 +142,8 @@ const getDataPatient = (body) => {
 };
 
 const getDataGuardian = (body) => {
+    logger.debug(`Patient Controller getDataGuardian(${JSON.stringify(body)})`);
+
     const data = {
         name: body.guardian_name,
         phone: body.guardian_phone,

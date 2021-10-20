@@ -1,3 +1,5 @@
+const { logger } = require("../config/winston/winston.config");
+
 const allKeysHaveValue = (object) => {
     for (const key in object) {
         if (object[key] == undefined || object[key].length === 0) return false;

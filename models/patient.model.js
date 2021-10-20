@@ -10,6 +10,8 @@ const querySelectPatients =
     " INNER JOIN Hospitals ON Patients.id_hospital = Hospitals.id";
 
 exports.create = (patient, response) => {
+    logger.debug(`Patient Model create(${JSON.stringify(patient)},  ${typeof response})`);
+
     const query = "INSERT INTO Patients SET ?";
     logger.debug(query + `, ${JSON.stringify(patient)}`);
     dbConnector.query(query, patient, (error, result) => {
@@ -18,6 +20,8 @@ exports.create = (patient, response) => {
 };
 
 exports.findAll = (response) => {
+    logger.debug(`Patient Model findAll(${typeof response})`);
+
     logger.debug(querySelectPatients);
     dbConnector.query(querySelectPatients, (error, result) => {
         error ? response(error) : response(false, result);
@@ -25,6 +29,8 @@ exports.findAll = (response) => {
 };
 
 exports.find = (patientId, response) => {
+    logger.debug(`Patient Model find(${patientId},  ${typeof response})`);
+
     const query = querySelectPatients + " WHERE Patients.id = ?";
     logger.debug(query + `, {${patientId}}`);
     dbConnector.query(query, patientId, (error, result) => {
@@ -33,6 +39,8 @@ exports.find = (patientId, response) => {
 };
 
 exports.update = (id, patient, response) => {
+    logger.debug(`Patient Model update(${id}, ${JSON.stringify(patient)},  ${typeof response})`);
+
     const query = "UPDATE Patients SET ? WHERE id = ?";
     logger.debug(query + `, ${JSON.stringify([patient, id])}`);
     dbConnector.query(query, [patient, id], (error, result) => {
@@ -41,7 +49,8 @@ exports.update = (id, patient, response) => {
 };
 
 exports.delete = (patientId, response) => {
-    console.log(response);
+    logger.debug(`Patient Model update(${patientId}, ${typeof response})`);
+
     const query = "DELETE FROM Patients WHERE id = ?";
     logger.debug(query + `, {${patientId}}`);
     dbConnector.query(query, patientId, (error, result) => {

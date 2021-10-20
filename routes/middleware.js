@@ -1,7 +1,10 @@
 const jwt = require("jwt-simple");
 const moment = require("moment");
+const { logger } = require("../config/winston/winston.config");
 
 const checkToken = (req, res, next) => {
+    logger.debug(`checkToken(${req.headers["user_token"]})`);
+
     if (!req.headers["user_token"])
         return res.json({
             error: "You need to include your Token",

@@ -4,6 +4,8 @@ const { logger } = require("../config/winston/winston.config");
 const dbConnector = require("../config/db.config");
 
 const getAll = () => {
+    logger.debug(`User Model getAll()`);
+
     return new Promise((resolve, reject) => {
         const query = "SELECT * FROM Users";
         logger.debug(query);
@@ -15,6 +17,8 @@ const getAll = () => {
 };
 
 const insert = ({ email, password, name }) => {
+    logger.debug(`User Model insert(${JSON.stringify({ email, password, name })})`);
+
     return new Promise((resolve, reject) => {
         const query = "INSERT INTO Users (email, password, name) VALUES (?,?,?)";
         logger.debug(query + `, ${JSON.stringify([email, password, name])}`);
@@ -28,6 +32,8 @@ const insert = ({ email, password, name }) => {
 };
 
 const getByEmail = (email) => {
+    logger.debug(`User Model getByEmail(${email})`);
+
     return new Promise((resolve, reject) => {
         const query = "SELECT * FROM Users WHERE email = ?";
         logger.debug(query + `, ${JSON.stringify([email])}`);
