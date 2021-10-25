@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const { logger } = require("./winston/winston.config");
 require("dotenv").config();
 
 const db = new Sequelize(
@@ -17,7 +18,10 @@ const db = new Sequelize(
       acquire: 30000,
       idle: 10000,
     },
-  }
+    logging: str => {
+      logger.debug(str)
+    }
+  }, 
 );
 
 module.exports = db;
