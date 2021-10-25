@@ -2,70 +2,60 @@ const Patient = require("../models/patient.model");
 const Guardian = require("../models/guardian.model");
 const { logger } = require("../config/winston/winston.config");
 const { allKeysHaveValue, isValidId, isSexValid, hiddenSensitiveData } = require("../utilities/index");
+const Patients = require("../models/patient.model");
+const Guardians = require("../models/guardian.model");
 
-exports.create = (request, response) => {
+exports.create = async (request, response) => {
     logger.debug(`Patient Controller create(${JSON.stringify(request.body)},  ${typeof response})`);
 
     bodyPatient = getDataPatient(request.body);
-    bodyGuardian = getDataGuardian(request.body);
+    // bodyGuardian = getDataGuardian(request.body);
 
     logger.debug(`body: ${hiddenSensitiveData(request.body)}`);
 
-    if (!bodyPatient.isCorrect || !bodyGuardian.isCorrect) {
+    if (!bodyPatient.isCorrect) {
         logger.warn("Incomplete data");
         return response.status(400).send({ message: "Incorrect data." });
     }
 
-    const sendPatientOrError = (error, resultPatient) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error. " + error });
-        }
-        const data = { id_patient: resultPatient.insertId, ...bodyGuardian.data };
-        const updateGuardian = (error, resultGuardian) => {
-            if (error) {
-                logger.error(error);
-                return response.status(500).send({ message: " DB internal error. " + error });
-            }
-            return response.status(200).json({ patient_id: resultPatient.insertId });
-        };
-        Guardian.create(data, updateGuardian);
-    };
-    Patient.create(bodyPatient.data, sendPatientOrError);
+    try {
+      const { id } = await Patients.create(bodyPatient.data)
+      return response.status(200).json({ patient_id: id });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: " DB internal error. " + error });
+    }
+
 };
 
-exports.findAll = (request, response) => {
+exports.findAll = async (request, response) => {
     logger.debug(`Patient Controller findAll(${JSON.stringify(request.body)},  ${typeof response})`);
 
-    const sendAllPatientsOrError = (error, patients) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." });
-        }
-        return response.status(200).json({ patients: patients });
-    };
-
-    Patient.findAll(sendAllPatientsOrError);
+    try {
+      const patients = await Patients.findAll()
+      return response.status(200).json({ patients });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: " DB internal error. " + error });
+    }
 };
 
-exports.find = (request, response) => {
+exports.find = async (request, response) => {
     logger.debug(`Patient Controller find(${JSON.stringify(request.body)},  ${typeof response})`);
 
     const id = request.params.id;
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
-    const sendPatientOrError = (error, patient) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." + error });
-        }
-        if (patient.length > 0) return response.status(200).json(patient[0]);
-        return response.status(200).json({});
-    };
-    Patient.find(id, sendPatientOrError);
+    try {
+      const patient = await Patients.findOne({ where: { id }})
+      return response.status(200).json({ patient });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: " DB internal error. " + error });
+    }
 };
 
-exports.update = (request, response) => {
+exports.update = async (request, response) => {
     logger.debug(`Patient Controller update(${JSON.stringify(request.body)},  ${typeof response})`);
 
     const id = request.params.id;
@@ -74,53 +64,36 @@ exports.update = (request, response) => {
 
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
     bodyPatient = getDataPatient(request.body);
-    bodyGuardian = getDataGuardian(request.body);
 
-    if (!bodyPatient.isCorrect || !bodyGuardian.isCorrect) {
+    if (!bodyPatient.isCorrect) {
         logger.warn("Incomplete data");
         return response.status(400).send({ message: "Incorrect data." });
     }
 
-    const updatePatientAndGuardian = (error) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." });
-        }
-        const updateGuardian = (error, result) => {
-            if (error) {
-                logger.error(error);
-                return response.status(500).send({ message: "DB internal error." });
-            }
-            return response.status(200).json({ message: "Updated Successfully" });
-        };
-        Guardian.update(id, bodyGuardian.data, updateGuardian);
-    };
-    Patient.update(id, bodyPatient.data, updatePatientAndGuardian);
+    try {
+      await Patients.update(request.body, { where: { id }})
+      return response.status(200).json({ message: "Updated Successfully" });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: " DB internal error. " + error });
+    }
 };
 
-exports.delete = (request, response) => {
+exports.delete = async (request, response) => {
     logger.debug(`Patient Controller delete(${JSON.stringify(request.body)},  ${typeof response})`);
 
     const id = request.params.id;
 
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
-    const deleteGuardianAndPatient = (error) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error. " });
-        }
-        const deletePatient = (error) => {
-            if (error) {
-                logger.error(error);
-                return response.status(500).send({ message: "DB internal error. " });
-            }
-            return response.status(200).json({ message: "Deleted successfully." });
-        };
-        Patient.delete(id, deletePatient);
-    };
-
-    Guardian.delete(id, deleteGuardianAndPatient);
+    try {
+      await Guardians.destroy({ where: { id_patient: id }})
+      await Patients.destroy({ where: { id }})
+      return response.status(200).json({ message: "Deleted successfully." });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: " DB internal error. " + error });
+    }
 };
 
 const getDataPatient = (body) => {

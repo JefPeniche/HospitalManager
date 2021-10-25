@@ -1,8 +1,8 @@
-const Hospital = require("../models/hospital.model");
 const { allKeysHaveValue, isValidId, hiddenSensitiveData } = require("../utilities/index");
 const { logger } = require("../config/winston/winston.config");
+const Hospitals = require("../models/hospital.model");
 
-exports.create = (request, response) => {
+exports.create = async (request, response) => {
     logger.debug(`Hospital Controller create(${JSON.stringify(request.body)},  ${typeof response})`);
     const data = {
         name: request.body.name,
@@ -16,48 +16,44 @@ exports.create = (request, response) => {
         return response.status(400).send({ message: "Incomplete data." });
     }
 
-    const sendHospitalIdOrError = (error, hospital_id) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." });
-        }
-        return response.status(200).json({ id: hospital_id });
-    };
+    try {
+      const { id }= await Hospitals.create(data);
+      return response.status(200).json({ id });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: "DB internal error." });
+    }
 
-    Hospital.create(data, sendHospitalIdOrError);
-};
+}
 
-exports.findAll = (request, response) => {
+exports.findAll = async (request, response) => {
     logger.debug(`Hospital Controller findALl(${JSON.stringify(request.body)},  ${typeof response})`);
 
-    const sendHospitalsOrError = (error, hospitals) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ error: true, message: "DB internal error." });
-        }
-        return response.status(200).json({ hospitals: hospitals });
-    };
-    Hospital.findAll(sendHospitalsOrError);
+    try {
+      const hospitals = await Hospitals.findAll()  
+      return response.status(200).json({ hospitals });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ error: true, message: "DB internal error." });
+    }
 };
 
-exports.find = (request, response) => {
+exports.find = async (request, response) => {
     logger.debug(`Hospital Controller find(${JSON.stringify(request.body)},  ${typeof response})`);
 
     const id = request.params.id;
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
-    const sendHospitalOrError = (error, hospital) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." + error });
-        }
-        if (hospital.length > 0) return response.status(200).json(hospital[0]);
-        return response.status(200).json({});
-    };
-    Hospital.find(id, sendHospitalOrError);
+    try {
+      const hospital = await Hospitals.findOne({ where: { id } }) 
+      return response.status(200).json(hospital);
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: "DB internal error." + error });
+    }
 };
 
-exports.update = (request, response) => {
+exports.update = async (request, response) => {
     logger.debug(`Hospital Controller update(${JSON.stringify(request.body)},  ${typeof response})`);
 
     const id = request.params.id;
@@ -72,31 +68,29 @@ exports.update = (request, response) => {
         return response.status(400).send({ message: "Incorrect data." });
     }
 
-    const sendSuccesMessageOrError = (error) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." });
-        }
-        return response.status(200).json({ message: "Updated Successfully" });
-    };
-    Hospital.update(id, bodyhospital.data, sendSuccesMessageOrError);
+    try {
+      await Hospitals.update(request.body, { where: { id: id } })
+      return response.status(200).json({ message: "Updated Successfully" });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: "DB internal error." });
+    }
 };
 
-exports.delete = (request, response) => {
+exports.delete = async (request, response) => {
     logger.debug(`Hospital Controller delete(${JSON.stringify(request.body)},  ${typeof response})`);
 
     const id = request.params.id;
 
     if (!isValidId(id)) return response.status(400).send({ message: "Invalid id." });
 
-    const sendSuccesMessageOrError = (error) => {
-        if (error) {
-            logger.error(error);
-            return response.status(500).send({ message: "DB internal error." });
-        }
-        return response.status(200).json({ message: "Deleted successfully." });
-    };
-    Hospital.delete(id, sendSuccesMessageOrError);
+    try {
+      await Hospitals.destroy({ where: { id } }) 
+      return response.status(200).json({ message: "Deleted successfully." });
+    } catch (error) {
+      logger.error(error);
+      return response.status(500).send({ message: "DB internal error." });
+    }
 };
 
 const getDatahospital = (body) => {
