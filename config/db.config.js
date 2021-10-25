@@ -1,15 +1,23 @@
-"use strict";
-const mysql = require("mysql");
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
-const dbConnector = mysql.createConnection({
+const db = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
+  {
     host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-});
+    dialect: "mysql",
+    define: {
+      timestamps: false,
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+  }
+);
 
-dbConnector.connect(function(error) {
-    if (error) throw error;
-});
-
-module.exports = dbConnector;
+module.exports = db;
