@@ -24,7 +24,7 @@ pipeline {
     }
     stage ('Invoke') {
       steps {
-        build job: '<jenkins1', propagate: true, wait: true
+        build job: 'jenkins1', propagate: true, wait: true
       }
     }
   }
