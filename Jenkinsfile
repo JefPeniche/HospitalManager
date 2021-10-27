@@ -10,6 +10,8 @@ pipeline {
         echo 'Building the application'
         
         sh 'docker build . -t hospitalmanager'
+        
+        sh 'docker run -d --network=host hospitalmanager'
       }
     }
   }
