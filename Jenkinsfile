@@ -15,6 +15,7 @@ pipeline {
         
         sh "docker build . -t hospitalmanager:${BUILD_NUMBER}"
         
+        sh "docker tag hospitalmanager:${BUILD_NUMBER} hospitalmanager:latest"
       }
       
     }
