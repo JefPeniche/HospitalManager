@@ -9,7 +9,7 @@ pipeline {
         
         echo 'Building the container'
         
-        sh 'docker rm $(docker ps -a -q)'
+        sh "docker rm $(docker ps -a -q)"
         
         sh 'docker build . -t hospitalmanager'
         
