@@ -25,7 +25,7 @@ pipeline {
         
         echo 'Running the container'
         
-        sh 'docker run -d --name test-app --network=host hospitalmanager'
+        sh 'docker run -d --name test-app --network=host hospitalmanager:latest'
       }
     }
   }
