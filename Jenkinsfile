@@ -22,10 +22,14 @@ pipeline {
         sh 'npm test'
       }
     }
-    stage ('Invoke') {
-      steps {
-        build job: 'jenkins2/main'
-      }
+  }
+  
+  post {
+    success {
+      echo 'I succeeded!'
+      build job: 'jenkins2/main'
     }
+    failure {
+      echo 'I failed! :('
   }
 }
