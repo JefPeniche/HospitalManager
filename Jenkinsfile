@@ -22,5 +22,10 @@ pipeline {
         sh 'npm test'
       }
     }
+    stage ('Invoke') {
+      steps {
+        build job: '<jenkins1', propagate: true, wait: true
+      }
+    }
   }
 }
