@@ -7,6 +7,8 @@ pipeline {
     stage("build") {
       steps {
         echo 'Building the application'
+        
+        sh 'docker build . -t hospitalmanager'
       }
     }  
   }
