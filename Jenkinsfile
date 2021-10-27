@@ -8,7 +8,7 @@ pipeline {
     stage("build") {
       steps {
         
-        echo "Build $(BUILD_NUMBER)"
+        echo "Build ${BUILD_NUMBER}"
         echo 'Building the application'
         
         sh 'npm install'
