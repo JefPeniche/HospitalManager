@@ -9,16 +9,7 @@ pipeline {
         
         echo 'Building the application'
         
-        sh 'npm install'
-      }
-    }
-    
-    stage("test") {
-      steps {
-        
-        echo 'Testing the application'
-        
-        sh 'npm test'
+        sh 'docker build . -t hospitalmanager'
       }
     }
   }
