@@ -4,7 +4,7 @@
   "description": "CRUD exercise DevOps asigment",
   "main": "server.js",
   "scripts": {
-    "test": "jest index.spec.js",
+    "test": "jest --runInBand",
     "start": "node server.js"
   },
   "author": "",

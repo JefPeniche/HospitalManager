@@ -1,4 +1,4 @@
-import MockDBConnection from "../mock/mock_db";
+const MockDBConnection = require("../mock/mock_db");
 
 const User = MockDBConnection.define("Users", [
     {
@@ -13,4 +13,4 @@ const User = MockDBConnection.define("Users", [
     },
 ]);
 
-export default User;
+module.exports = User;

@@ -1,5 +1,5 @@
-import SequelizeMock from "sequelize-mock";
+const SequelizeMock = require("sequelize-mock");
 
 const MockDBConnection = new SequelizeMock();
 
-export default MockDBConnection;
+module.exports = MockDBConnection;
