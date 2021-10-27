@@ -14,6 +14,9 @@ pipeline {
         sh 'docker build . -t hospitalmanager'
         
       }
+      
+    }
+    
     stage("run") {
       steps {
         
