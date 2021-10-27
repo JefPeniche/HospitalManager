@@ -10,7 +10,9 @@ pipeline {
         
         sh 'docker build . -t hospitalmanager'
         
-        sh 'docker run --network=host hospitalmanager'
+        sh 'npm install'
+        
+        sh 'npm test'
       }
     }  
   }
