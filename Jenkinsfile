@@ -13,7 +13,7 @@ pipeline {
         
         sh 'docker rm test-app'
         
-        sh 'docker build . -t hospitalmanager'
+        sh "docker build . -t hospitalmanager:${BUILD_NUMBER}"
         
       }
       
