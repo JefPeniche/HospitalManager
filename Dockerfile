@@ -4,8 +4,6 @@ WORKDIR /usr/src/app
 
 RUN npm install
 
-RUN npm install express mysql moment bcryptjs jwt-simple dotenv winston winston-daily-rotate-file
-
 COPY . .
 
 EXPOSE 3000
