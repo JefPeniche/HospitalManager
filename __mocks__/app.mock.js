@@ -1,5 +1,6 @@
 const express = require("express");
 const userMockRoutes = require("./routes/users.mock");
+const guardiansMockRoutes = require("./routes/guardian.mock");
 
 const app = express();
 
@@ -9,5 +10,6 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/users", userMockRoutes);
+app.use("/api/guardians", guardiansMockRoutes);
 
 module.exports = app;
