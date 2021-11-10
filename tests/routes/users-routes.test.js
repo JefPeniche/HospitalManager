@@ -3,39 +3,39 @@ const app = require("../../__mocks__/app.mock");
 // GET Route
 describe("GET /users", () => {
     it("Should be correct", async () => {
-        const response = await supertest(app).get("/users");
-        expect(200).not.toBeNull();
+        const { statusCode } = await supertest(app).get("/api/users");
+        expect(statusCode).toBe(200);
     });
 });
 
 // POST Route
 describe("POST /users", () => {
     it("Should be correct", async () => {
-        const response = await supertest(app).post("/users");
-        expect(200).not.toBeNull();
+        const { statusCode } = await supertest(app).get("/api/users");
+        expect(statusCode).toBe(200);
     });
 });
 
 //GET BY ID Route
 describe("GET BY ID /users", () => {
     it("Should be correct", async () => {
-        const response = await supertest(app).get("/users/:id");
-        expect(200).not.toBeNull();
+        const { statusCode } = await supertest(app).get("/api/users");
+        expect(statusCode).toBe(200);
     });
 });
 
 // DELETE Route
 describe("DELETE /users", () => {
     it("Should be correct", async () => {
-        const response = await supertest(app).delete("/users/:id");
-        expect(200).not.toBeNull();
+        const { statusCode } = await supertest(app).get("/api/users");
+        expect(statusCode).toBe(200);
     });
 });
 
 // PUT Route
-describe("PUT /customer", () => {
+describe("PUT /user", () => {
     it("Should be correct", async () => {
-        const response = await supertest(app).put("/customer/:id");
-        expect(200).not.toBeNull();
+        const { statusCode } = await supertest(app).get("/api/users");
+        expect(statusCode).toBe(200);
     });
 });
